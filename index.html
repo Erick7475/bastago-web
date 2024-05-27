@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Basta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #gameContainer {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #timer {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .btn.disabled {
+            background-color: #ccc;
+            pointer-events: none;
+        }
+
+        #lostMessage {
+            color: red;
+            font-size: 24px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #letterContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .letterBtn {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .letterBtn:hover {
+            background-color: #ddd;
+        }
+
+        .letterBtn.disabled {
+            background-color: #ccc;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <span id="timer">Tiempo: 15s</span>
+        <div id="letterContainer"></div>
+        <div id="lostMessage">¡Perdiste!</div>
+        <button id="startBtn" class="btn">Iniciar</button>
+        <button id="resetBtn" class="btn">Reiniciar</button>
+    </div>
+
+    <script>
+        var timeLeft = 15;
+        var timerInterval;
+
+        document.getElementById("startBtn").addEventListener("click", function() {
+            startGame();
+        });
+
+        document.getElementById("resetBtn").addEventListener("click", function() {
+            resetGame();
+        });
+
+        function startGame() {
+            document.getElementById("startBtn").disabled = true;
+            timerInterval = setInterval(updateTimer, 1000);
+            activateLetters();
+            hideLostMessage();
+        }
+
+        function resetGame() {
+            clearInterval(timerInterval);
+            timeLeft = 15;
+            document.getElementById("timer").textContent = "Tiempo: 15s";
+            document.getElementById("startBtn").disabled = false;
+            resetLetters();
+            hideLostMessage();
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById("timer").textContent = "Tiempo: " + timeLeft + "s";
+            if (timeLeft === 0) {
+                clearInterval(timerInterval);
+                resetLetters();
+                showLostMessage();
+            }
+        }
+
+        function activateLetters() {
+            var letterButtons = document.querySelectorAll("#letterContainer button");
+            letterButtons.forEach(function(button) {
+                button.addEventListener("click", function() {
+                    button.classList.add("disabled");
+                    resetTimer();
+                });
+            });
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 15;
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function resetLetters() {
+            var letterButtons = document.querySelectorAll("#letterContainer button");
+            letterButtons.forEach(function(button) {
+                button.classList.remove("disabled");
+            });
+        }
+
+        function showLostMessage() {
+            var lostMessage = document.getElementById("lostMessage");
+            lostMessage.style.display = "block";
+        }
+
+        function hideLostMessage() {
+            var lostMessage = document.getElementById("lostMessage");
+            lostMessage.style.display = "none";
+        }
+
+        var letterContainer = document.getElementById("letterContainer");
+        for (var i = 0; i < 26; i++) {
+            var letter = String.fromCharCode(65 + i); // Convierte el código ASCII a letra
+            var btn = document.createElement("button");
+            btn.textContent = letter;
+            btn.classList.add("letterBtn");
+            letterContainer.appendChild(btn);
+        }
+    </script>
+</body>
+</html>
